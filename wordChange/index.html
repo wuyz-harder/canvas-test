@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+</body>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<script>
+    //获取canvas元素
+
+    var canvas = document.getElementById('canvas');
+    //设置canvas的宽高
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    //获取canvas的上下文
+    var ctx = canvas.getContext('2d');
+    ctx.lineWidth = 1;
+    const particleArray = [];
+    const distance = 300;
+    const lineColor ='rgba(200, 200, 200, 0.1)';
+    const particleLength = 35;
+    var mouseParticle
+
+
+
+    const Particle = function (x, y, radius, color) {
+        this.x = x;
+        this.y = y;
+        this.speedX = (Math.random() - 0.5) * 2;
+        this.speedY = (Math.random() - 0.5) * 2;
+        this.radius = radius;
+        this.color = color;
+    }
+
+
+
+    Particle.prototype.update = function () {
+        this.x += this.speedX;
+
+        this.y += this.speedY;
+        if (this.x > canvas.width - this.radius || this.x < - this.radius) {
+            this.speedX = -this.speedX;
+        }
+        if (this.y > canvas.height - this.radius || this.y < - this.radius) {
+            this.speedY = -this.speedY;
+        }
+    }
+
+    Particle.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+        drawLine();
+    }
+
+
+   
+
+    const mouseMoveHandler = function (event) {
+        if(!mouseParticle){
+            mouseParticle = new Particle(canvas.width / 2, canvas.height / 2, 10, 'red');
+            particleArray.push(mouseParticle);
+        }    
+        mouseParticle.x = event.clientX;
+        mouseParticle.y = event.clientY;
+    }
+
+    canvas.addEventListener('mousemove', mouseMoveHandler);
+
+
+    function init() {
+        for (let i = 0; i < particleLength; i++) {
+            let radius = Math.random() * 10 ;
+            let x = Math.random() * (canvas.width - radius * 2) + radius;
+            let y = Math.random() * (canvas.height - radius * 2) + radius;
+            let color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`;
+            let particle = new Particle(x, y, radius, color);
+            particle.draw();
+            particleArray.push(particle);
+        }
+        
+    }
+
+    // 根据距离是否小于给到的数值画线
+    const drawLine = function () {
+        for (let i = 0; i < particleArray.length; i++) {
+            for (let j = i + 1; j < particleArray.length; j++) {
+                let particleDistance = Math.sqrt(Math.pow(particleArray[i].x - particleArray[j].x, 2) + Math.pow(particleArray[i].y - particleArray[j].y, 2));
+                if (particleDistance < distance) {
+                    ctx.beginPath();
+                    ctx.moveTo(particleArray[i].x, particleArray[i].y);
+                    ctx.lineTo(particleArray[j].x, particleArray[j].y);
+                    ctx.strokeStyle = lineColor;
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+            }
+        }
+
+    }
+
+
+    function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var updateLength = particleArray.length;
+        // 不要更新鼠标的
+        if(mouseParticle){
+            updateLength = updateLength - 1;
+        }
+        for (let i = 0; i < updateLength; i++) {
+            particleArray[i].update();
+            particleArray[i].draw();
+        }
+        mouseParticle.draw();
+    }
+
+    init();
+    animate();
+
+
+
+
+</script>
+
+</html>
