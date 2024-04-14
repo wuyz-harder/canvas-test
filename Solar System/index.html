@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Circle with Gradient</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" style="background: #03091d;"></canvas>
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+        const ctx = canvas.getContext('2d');
+
+        const CircleArray = [], StarArray = [];
+        const StarLength = 6;
+        const sunGradientradius = 50;
+        const CircleColor = 'hsl(226deg 22.06% 26.67%)';
+        var centerX = canvas.width / 2;
+        var centerY = canvas.height / 2;
+         // 定义渐变起始颜色和终止颜色
+        const gradientStartColor = 'rgba(64,53,30,1)'; // 开始颜色
+        const gradientEndColor = 'rgba(50, 43, 32, 0)'; // 结束颜色，透明
+
+        const Circle = function (radius) {
+
+            this.radius = radius;
+
+        }
+
+
+        Circle.prototype.draw = function () {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, this.radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = CircleColor;
+            ctx.stroke()
+
+        }
+
+        const Star = function (angle, radius) {
+
+            this.angle = angle;
+            // 这个是所在圈的半径
+            this.radius = radius;
+            this.starRadius = 10;
+        }
+        Star.prototype.draw = function () {
+            ctx.beginPath();
+            let x = canvas.width / 2 + Math.cos(this.angle) * (this.radius + this.starRadius);
+            let y = canvas.height / 2 + Math.sin(this.angle) * (this.radius + this.starRadius);
+            ctx.arc(x, y, this.starRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = "green";
+            ctx.fill()
+            ctx.closePath();
+        }
+        Star.prototype.update = function () {
+            this.angle += 0.01;
+            this.draw();
+        }
+
+        /**
+         * 画太阳
+         * 
+         * **/
+        const drawSun = function () {
+            // 创建径向渐变对象
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, sunGradientradius);
+            // 添加颜色停止点
+            gradient.addColorStop(0, gradientStartColor); // 开始颜色
+            gradient.addColorStop(1, gradientEndColor); // 结束颜色
+
+            // 绘制圆形并填充渐变颜色
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, sunGradientradius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            // 中心圆
+
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 25, 0, 2 * Math.PI);
+            ctx.fillStyle = "#cc9900";
+            ctx.fill()
+            ctx.closePath();
+        }
+
+        for (let i = 1; i <= StarLength; i += 1) {
+            const circle = new Circle(i * 60 + 10);
+            CircleArray.push(circle);
+            // 随机角度
+            const star = new Star(Math.random() * Math.PI * 2, i * 60);
+            StarArray.push(star);
+        }
+
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawSun()
+            for (let i = 1; i <= StarLength; i += 1) {
+                const circle = CircleArray[i-1];
+                circle.draw();
+                const star = StarArray[i-1];
+                star.update();
+
+            }
+        }
+
+        animate();
+
+        window.addEventListener('resize', function () {
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+        })
+    </script>
+</body>
+
+</html>
