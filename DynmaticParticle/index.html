@@ -29,7 +29,7 @@
     ctx.lineWidth = 1;
     const particleArray = [];
     const distance = 300;
-    const lineColor ='rgba(200, 200, 200, 0.1)';
+    const lineColor ='rgba(220, 220, 220, 0.05)';
     const particleLength = 35;
     var mouseParticle
 
@@ -38,8 +38,8 @@
     const Particle = function (x, y, radius, color) {
         this.x = x;
         this.y = y;
-        this.speedX = (Math.random() - 0.5) * 2;
-        this.speedY = (Math.random() - 0.5) * 2;
+        this.speedX = (Math.random() - 0.5) ;
+        this.speedY = (Math.random() - 0.5) ;
         this.radius = radius;
         this.color = color;
     }
@@ -70,16 +70,7 @@
 
    
 
-    const mouseMoveHandler = function (event) {
-        if(!mouseParticle){
-            mouseParticle = new Particle(canvas.width / 2, canvas.height / 2, 10, 'red');
-            particleArray.push(mouseParticle);
-        }    
-        mouseParticle.x = event.clientX;
-        mouseParticle.y = event.clientY;
-    }
-
-    canvas.addEventListener('mousemove', mouseMoveHandler);
+ 
 
 
     function init() {
@@ -113,6 +104,22 @@
 
     }
 
+
+    const mouseMoveHandler = function (event) {
+        if(!mouseParticle){
+            mouseParticle = new Particle(canvas.width / 2, canvas.height / 2, 10, 'red');
+            particleArray.push(mouseParticle);
+        }    
+        mouseParticle.x = event.clientX;
+        mouseParticle.y = event.clientY;
+    }
+
+    canvas.addEventListener('mousemove', mouseMoveHandler);
+
+    document.addEventListener('resize', function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
 
     function animate() {
         requestAnimationFrame(animate);
