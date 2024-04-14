@@ -17,6 +17,16 @@
     <canvas id="canvas"></canvas>
 
     <script>
+
+        /**
+         * 思路：
+         * 1. 先绘制文字获
+         * 2. 遍历imageData，获取每个像素的颜色值，如果是红色，则创建粒子，记录位置
+         * 3. 循环绘制粒子动画 ，5s后回到原位
+         * 
+         * PS：如果想通过输入的文字实现效果，无非就是重新获取坐标，然后遍历已有的粒子，调整原始位置
+         * 也就是orginalX, orginalY,少则添加多则记录下来多余的粒子，然后重新绘制
+         * **/
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth
@@ -24,7 +34,7 @@
 
         const fontSize = 100;
         const font = `${fontSize}px Arial`;
-        const text = "Hello World";
+        const text = "阿里嘎多";
         ctx.textAlign = "center";
         const x = canvas.width / 2;
         const y = canvas.height / 2;
@@ -87,8 +97,9 @@
 
         Praticle.prototype.draw = function () {
             ctx.beginPath();
-            ctx.strokeStyle = `red`;
-            ctx.fillRect(this.x, this.y, 2, 2);
+            ctx.fillStyle = `#79a8ae`;
+            ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI);
+            ctx.fill();
             ctx.closePath();
         }
 
