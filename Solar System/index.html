@@ -33,8 +33,9 @@
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
          // 定义渐变起始颜色和终止颜色
-        const gradientStartColor = 'rgba(64,53,30,1)'; // 开始颜色
-        const gradientEndColor = 'rgba(50, 43, 32, 0)'; // 结束颜色，透明
+        const gradientStartColor = '#cc8800'; // 开始颜色
+        const gradientEndColor = '#03091d'; // 结束颜色，透明
+        const rotateSpeed = 0.005; // 旋转速度
 
         const Circle = function (radius) {
 
@@ -68,7 +69,7 @@
             ctx.closePath();
         }
         Star.prototype.update = function () {
-            this.angle += 0.01;
+            this.angle += rotateSpeed;
             this.draw();
         }
 
