@@ -35,6 +35,8 @@
     const Clouds = [];
     const waterColor = "#add8e6"
 
+    
+
     const Rain = function () {
         this.x = Math.random() * width;
         this.y = Math.random() * height;
@@ -85,6 +87,13 @@
         this.speedY += 0.02;
         // 速度为0就不画了
         if (this.speedY >= 0) {
+            // 把自己删除
+            for(let i = 0; i < waterSplashs.length; i++){
+                if(waterSplashs[i] === this){
+                    waterSplashs.splice(i,1)
+                    break
+                }
+            }
             return
         }
         ctx.beginPath();
@@ -92,8 +101,6 @@
         ctx.bezierCurveTo(this.x + this.size, this.y - this.size, this.x + this.size * 2, this.y - this.size / 2, this.x + this.size * 2, this.y + this.size * 2);
         ctx.bezierCurveTo(this.x + this.size * 2, this.y + this.size * 4, this.x + this.size, this.y + this.size * 2, this.x, this.y + this.size * 2);
         ctx.closePath();
-        // ctx.beginPath();
-        // ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = waterColor; // 水花的颜色
         ctx.fill();
     }
@@ -111,6 +118,7 @@
     }
 
     const animate = function () {
+        
         ctx.clearRect(0, 0, width, height);
         drawGlobal()
         for (let i = 0; i < Rains.length; i++) {
@@ -125,6 +133,7 @@
     for (let i = 0; i < RainNums; i++) {
         Rains.push(new Rain());
     }
+
     animate();
 
 </script>
