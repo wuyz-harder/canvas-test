@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+
+<script>
+    const BACKGROUND_COLOR = 'hsl(%h, 50%, %l%)';
+    const DELTA_HUE = 0.1
+    const snowLength = 200;
+    var hue = 180;
+    var angle = 60;
+    var snows = [];
+
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var canvasWidth = canvas.width;
+    var canvasHeight = canvas.height;
+
+    //创建渐变背景
+    const createRandomBg = function () {
+        ctx.save(); // 保存当前画布状态
+
+        hue += DELTA_HUE;
+        hue %= 360;
+        var gradient = ctx.createRadialGradient(canvasWidth / 2, canvasHeight / 2, 1, canvasWidth / 2, canvasHeight / 2, canvasHeight / 2),
+            backgroundColor = BACKGROUND_COLOR.replace('%h', hue);
+        // 逐渐变暗
+        gradient.addColorStop(0, backgroundColor.replace('%l', 40));
+        gradient.addColorStop(0.2, backgroundColor.replace('%l', 20));
+        gradient.addColorStop(1, backgroundColor.replace('%l', 10));
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        ctx.restore(); // 恢复画布状态
+    }
+
+    const Snow = function (x, y, radius) {
+        this.x = Math.random() * canvasWidth;
+        this.y = Math.random() * canvasHeight;
+        this.radius =  Math.random() * 3;
+        this.speedX = Math.random()  - 0.5;
+        this.THRESHOLD_TRANSPARENCY = 0.7,
+        this.speedY = Math.random()  - 0.5;
+        this.angle = Math.random() * 360;
+
+    }
+    Snow.prototype.draw = function () {
+        ctx.save();
+        this.radius += 0.02;
+        this.radius = this.radius > 20 ? 20 : this.radius;
+        this.x += this.speedX;
+        this.y += this.speedY;
+        ctx.globalAlpha = Math.max(0, ((20 - this.radius)) / 20);
+        if (this.x > canvasWidth + this.radius || this.x < -this.radius || this.y > canvasHeight + this.radius || this.y < -this.radius) {
+            this.radius = 0.2;
+            this.x = canvasWidth / 2;
+            this.y = canvasHeight / 2;
+        }
+        // 先平移坐标轴中心
+        ctx.translate(this.x, this.y);
+        // 然后旋转坐标轴中心
+        this.angle += 0.3;
+        this.angle = this.angle % 360;
+        ctx.rotate(2 * Math.PI * this.angle / 360);
+        for (let i = 0; i < 6; i++) {
+            ctx.beginPath();
+            // 设置宽度，先是划线，
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = this.radius / 10;
+            ctx.lineCap = 'round';
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -this.radius);
+            ctx.moveTo(0, -this.radius);
+            ctx.stroke()
+            // 然后是fill画实心圆
+            ctx.fillStyle = 'white';
+            ctx.arc(0, -this.radius, this.radius / 8, 0, Math.PI * 2, false);
+            ctx.fill();
+            ctx.rotate(2 * Math.PI / 6);
+            for (let j = 1; j < 3; j++) {
+                ctx.beginPath();
+                ctx.moveTo(0, -this.radius * 0.8 / j);
+                ctx.lineTo(-this.radius / 5, -this.radius / j - 2);
+                ctx.stroke()
+
+
+                ctx.moveTo(0, -this.radius * 0.8 / j);
+                ctx.lineTo(this.radius / 5, -this.radius / j - 2);
+                ctx.stroke()
+                ctx.closePath()
+            }
+            ctx.closePath();
+
+        }
+        ctx.restore();
+    }
+
+    for (let i = 0; i < snowLength; i++) {
+        snows.push(new Snow());
+    }
+
+
+
+    const animate = () => {
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        createRandomBg();
+        for (let i = 0; i < snowLength; i++) {
+            snows[i].draw();
+        }
+
+        requestAnimationFrame(animate);
+    }
+    animate()
+
+</script>
+
+</html>
